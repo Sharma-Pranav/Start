@@ -103,6 +103,7 @@ if __name__ == '__main__':
             train_accuracy_meter, train_loss_meter = train_phase.run()
             test_accuracy_meter, test_loss_meter = test_phase.run()
             val_accuracy_meter, val_loss_meter =  val_phase.run()
+            
             continue_training = val_accuracy_meter.check_min_value_in_last_elements_of_queue(early_stopping_length)
             save_model_in_fold_flag = val_accuracy_meter.update_fold_on_min_flag()
             if save_model_in_fold_flag:
