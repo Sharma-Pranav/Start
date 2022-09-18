@@ -1,7 +1,8 @@
 import torch.nn as nn
 import torch.nn.functional as F
 #import torch.flatten as flatten
-
+import torch
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 class Net(nn.Module):
     def __init__(self):
         super().__init__()
@@ -13,6 +14,7 @@ class Net(nn.Module):
         self.fc3 = nn.Linear(84, 10)
 
     def forward(self, x):
+        x = x.to(device)
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
         #x = flatten(x, 1) # flatten all dimensions except batch
