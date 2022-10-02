@@ -34,12 +34,17 @@ for key in model_weight_dict.keys():
     model_weight = model_weight_dict[key]
     model = model_prototype()
     model.load_state_dict(model_weight)
+    model.cpu()
     #print(type(model))
     #print(model)
-    model_list.append(model.cpu())
+    model.eval()
+    #rand_input = torch.rand((1,3, 32,32))
+    #rand_out = model(rand_input)
+    #print(rand_input.shape)
+    model_list.append(model)
 
-print(len(model_list))
-
+#print(model_list)
+#a=b
 train_df = pd.read_csv('data\\train.csv')
 val_df = pd.read_csv('data\\test.csv')
 

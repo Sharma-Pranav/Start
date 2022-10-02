@@ -9,6 +9,7 @@ from model_class import NeuralNet
 import pandas as pd
 from sklearn.metrics import accuracy_score, log_loss
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 class MetaLearn:
     def __init__(self, model_list:list=None, pre_transforms:list = None, tta_alb_transforms:list= None):
@@ -29,23 +30,12 @@ class MetaLearn:
                 #plt.imshow(transformed_image)
                 transformed_image = torch.unsqueeze(transformed_image, 0)
                 
-                #print('tta device: ', device, type(transformed_image))
-
-                print('transformed_image.device : ', transformed_image.device)
-                transformed_image.to(device)
-                transformed_image.cuda()
+                transformed_image = transformed_image.to(device)#cuda()
                 
-                model.cuda()
-                print('transformed_image.get_device() :', transformed_image.get_device())
-                print('model.get_device() : ', model.get_device())
-                #model.to(device)
-                #model.tl_model.to(device)
-                #print('transformed_image.device : ', transformed_image.device)
-                #print(type(model), type(transformed_image))
-                #print(model.fc1.weight)
-                #print(transformed_image.get_device())
-                #print(transformed_image)
+                #print('transformed_image.shape : ', transformed_image.shape)
+                #print('model : ', model)
                 model_output = model(transformed_image)
+                
                 prediction = torch.argmax(model_output, axis =1)
                 #model.cpu()
                 return prediction
@@ -54,7 +44,7 @@ class MetaLearn:
         for i in range(len(self.tta_transforms)):
             test_df['pred_aug_'+str(i)]= ""
         req_transforms = [A.Normalize(), ToTensorV2()]
-        for index, row in test_df.iterrows():
+        for index, row in tqdm(test_df.iterrows(), total=test_df.shape[0]):
             #print(row)
             image = cv2.imread(row['path'])
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -62,7 +52,9 @@ class MetaLearn:
             list_predictions = []
             for i in range(len(self.tta_transforms)):
                 copy_req_transforms = req_transforms.copy()
-                copy_req_transforms.insert(0, self.tta_transforms[i])       
+                copy_req_transforms.insert(0, self.tta_transforms[i])  
+                #print('copy_req_transforms : ', copy_req_transforms)     
+                #a=B
                 pred = get_output_for_transforms(copy_req_transforms,model.to(device), image, device)
                 #row['pred_aug_'+str(i)] = pred.cpu().numpy()
                 test_df['pred_aug_'+str(i)].iloc[index] = int(pred.cpu().numpy())
@@ -113,7 +105,7 @@ class MetaLearn:
 
     def create_meta_learn_labels_on_dict(self, tta_dict):
         prep_dfs = []
-        for i, key in enumerate(tta_dict.keys()):
+        for i, key in tqdm(enumerate(tta_dict.keys())):
             #print('Key :', key)
             df, acc = tta_dict[key]
             #print('Columns before : ', df.columns)
