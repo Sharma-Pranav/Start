@@ -68,9 +68,6 @@ class CV2ImageDataset(Dataset):
         label = torch.tensor(int(self.labels[idx]))
         if self.transform is not None:
             image = self.transform(image=image)["image"]
-        #image = image.to(self.device, dtype = torch.float)
-        #label = label.to(self.device, dtype = torch.long)
-        #print('image.shape, : ',image.shape, )
         return image, label
     
 
