@@ -13,3 +13,4 @@ I intend to write following Algorithms for this code base in Examples Folder:
   6) Semantic Segementation - Will likely use MSCOCO Dataset
   7) Domain Adaption - Algorithm and dataset are yet to be decided
   8) Single Shot Learning - Face Recognition using limited Samples
+  9) Noise Removal - Can be done using any image Dataset.
