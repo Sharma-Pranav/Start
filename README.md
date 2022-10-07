@@ -9,8 +9,9 @@ I intend to write following Algorithms for this code base in Examples Folder:
   2) Transfer Learning - Currently implemented with Cifar-10 dataset
   3) Meta-Learning - Currently implemented with Cifar-10 dataset
   4) Facial Point Recognition - Currently implement Udacity Facial Point Dataset
-  5) Instance Segmentation - Will likely use MSCOCO Dataset
+  5) Object Detection - Will likely use MSCOCO Dataset
   6) Semantic Segementation - Will likely use MSCOCO Dataset
-  7) Domain Adaption - Algorithm and dataset are yet to be decided
-  8) Single Shot Learning - Face Recognition using limited Samples
-  9) Noise Removal - Can be done using any image Dataset.
+  7) Instance Segmentation - Will likely use MSCOCO Dataset
+  8) Domain Adaption - Algorithm and dataset are yet to be decided
+  9) Single Shot Learning - Face Recognition using limited Samples
+  10) Noise Removal From Images- Can be done using any image Dataset.
