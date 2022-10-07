@@ -11,7 +11,7 @@ I intend to write following Algorithms for this code base in Examples Folder:
   4) Facial Point Recognition - Currently implement Udacity Facial Point Dataset
   5) Object Detection - Will likely use MSCOCO Dataset
   6) Single Shot Learning - Face Recognition using limited Samples
-  7) Semantic Segementation - Will likely use MSCOCO Dataset
+  7) Semantic Segementation - Will likely use ISIC Dataset
   8) Instance Segmentation - Will likely use MSCOCO Dataset
   9) Domain Adaption - Algorithm and dataset are yet to be decided
   10) Noise Removal From Images- Can be done using any image Dataset.
