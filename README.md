@@ -8,7 +8,7 @@ I intend to write following Algorithms for this code base in Examples Folder:
   1) Simple Classification - Currently implemented with Cifar-10 dataset
   2) Transfer Learning - Currently implemented with Cifar-10 dataset
   3) Meta-Learning - Currently implemented with Cifar-10 dataset
-  4) Facial Point Recognition - Currently implement Udacity Facial Point Dataset
+  4) Facial Point Recognition - Currently implemented Udacity Facial Point Dataset
   5) Object Detection - Will likely use MSCOCO Dataset
   6) Single Shot Learning - Face Recognition using limited Samples
   7) Semantic Segementation - Will likely use ISIC Dataset
