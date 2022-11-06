@@ -1,4 +1,3 @@
-#from torch.utils.data.dataloader import DataLoader
 import torch
 import cv2
 import albumentations as A
@@ -8,7 +7,6 @@ from average_meter import AverageMeter
 from model_class import NeuralNet
 import pandas as pd
 from sklearn.metrics import accuracy_score, log_loss
-#import matplotlib.pyplot as plt
 from tqdm import tqdm
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 class MetaLearn:

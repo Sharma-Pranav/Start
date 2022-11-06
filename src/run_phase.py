@@ -7,6 +7,9 @@ from torch.nn import Module
 from tqdm import tqdm
 from average_meter import AverageMeter
 class run_phase():
+    """
+    Phase for running class
+    """
     def __init__(self, loader: DataLoader[Any],
                  model:Module, 
                  phase:str,
@@ -24,10 +27,21 @@ class run_phase():
         self.accuracy_meter = AverageMeter()
         self.loss_meter = AverageMeter()
         self.phase = phase
+
     def update_epoch(self):
+        """
+        Update Epochs
+        """
         self.epoch+=1
     def run(self):
-        
+        """
+        Run for number of epochs
+
+        Returns:
+           self.accuracy_meter:  Accuracy Meter Object, 
+           self.loss_meter : Loss Meter Object
+        """
+
         for X_train, y_train in tqdm(self.loader, desc=self.phase):
             X_train, y_train = X_train.to(self.device, dtype = torch.float), y_train.to(self.device, dtype = torch.float)
             self._run_single(X_train, y_train)
@@ -35,7 +49,11 @@ class run_phase():
         print('{} Accuracy for epoch : {}'.format(self.phase, self.accuracy_meter.return_current_avg()))    
         print('{} Loss for epoch : {}'.format(self.phase, self.loss_meter.return_current_avg())) 
         return self.accuracy_meter, self.loss_meter
+
     def run_for_epoch(self):
+        """
+        Run for Epochs
+        """
         if self.optimizer==None:
             with torch.no_grad():
                 self.run()
@@ -43,6 +61,13 @@ class run_phase():
             self.run()
         
     def _run_single(self, X_train, y_train):
+        """
+        Run for single epoch
+        Returns:
+            X_train: data
+            y_train: labels
+        """
+        
         self.run_count +=1
         batch_size = X_train.shape[0]
         prediction = self.model(X_train)

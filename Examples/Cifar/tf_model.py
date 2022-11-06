@@ -1,11 +1,11 @@
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision.models import efficientnet_v2_l, EfficientNet_V2_L_Weights
-#import torch.flatten as flatten
-
-
 
 class Net(nn.Module):
+    """
+    Transfer Learning Model Initialisation
+    """
     def __init__(self):
         super(Net, self).__init__()
         self.tl_model_weights = EfficientNet_V2_L_Weights.DEFAULT
