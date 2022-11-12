@@ -1,7 +1,5 @@
 import torch.nn as nn
 import torch.nn.functional as F
-import torch
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 class Net(nn.Module):
     """
     Simple Model Initialisation
@@ -16,7 +14,6 @@ class Net(nn.Module):
         self.fc3 = nn.Linear(84, 10)
 
     def forward(self, x):
-        x = x.to(device)
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
         x =  x.view(x.shape[0], -1)

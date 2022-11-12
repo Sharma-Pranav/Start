@@ -8,7 +8,6 @@ from model_class import NeuralNet
 import pandas as pd
 from sklearn.metrics import accuracy_score, log_loss
 from tqdm import tqdm
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 class MetaLearn:
     def __init__(self, model_list:list=None, pre_transforms:list = None, tta_alb_transforms:list= None):
         """Initialises metalearning object
@@ -76,7 +75,7 @@ class MetaLearn:
         batch_correct = list_bools.sum()
         self.tta_accuracy_meter.update(batch_correct, test_df.shape[0], 0)
         current_accuracy_average = self.tta_accuracy_meter.return_current_avg()
-        return  test_df, current_accuracy_average #self.tta_accuracy_meter.return_current_avg()
+        return  test_df, current_accuracy_average
 
     def generate_tta_dict_for_folds(self,val_df , tta_transforms, device):
         """Generates Test Time Augmentation dictionary containining test time augmented dataframes corresponding to all models in the model list
