@@ -1,14 +1,11 @@
-#https://www.kaggle.com/code/vikramsandu/efficientnet-from-scratch
+#Source https://www.kaggle.com/code/vikramsandu/efficientnet-from-scratch
 # Useful Modules
-
 import torch
 from torch import nn
 from math import ceil
 
-''' A simple Convolution, Batch Normalization, and Activation Class'''
-
 class ConvBnAct(nn.Module):
-    
+    ''' A simple Convolution, Batch Normalization, and Activation Class'''    
     def __init__(self, n_in, n_out, kernel_size = 3, stride = 1, 
                  padding = 0, groups = 1, bn = True, act = True,
                  bias = False
@@ -30,17 +27,12 @@ class ConvBnAct(nn.Module):
         x = self.activation(x)
         
         return x
-    
-#------------------------------------------------------------------------------
-
-''' Squeeze and Excitation Block '''
 
 class SqueezeExcitation(nn.Module):
-    
+    ''' Squeeze and Excitation Block '''    
     def __init__(self, n_in, reduced_dim):
         super(SqueezeExcitation, self).__init__()
-        
-        
+                
         self.se = nn.Sequential(
             nn.AdaptiveAvgPool2d(1),
             nn.Conv2d(n_in, reduced_dim, kernel_size=1),
@@ -54,13 +46,9 @@ class SqueezeExcitation(nn.Module):
         y = self.se(x)
         
         return x * y
-                                    
-#------------------------------------------------------------------------------
-
-''' Stochastic Depth Module'''
 
 class StochasticDepth(nn.Module):
-    
+    ''' Stochastic Depth Module'''    
     def __init__(self, survival_prob = 0.8):
         super(StochasticDepth, self).__init__()
         
@@ -74,21 +62,18 @@ class StochasticDepth(nn.Module):
         binary_tensor = torch.rand(x.shape[0], 1, 1, 1, device=x.device) < self.p
         
         return torch.div(x, self.p) * binary_tensor
-        
-#-------------------------------------------------------------------------------
-
-''' Residual Bottleneck Block with Expansion Factor = N as defined in Mobilenet-V2 paper
-    with Squeeze and Excitation Block and Stochastic Depth. 
-'''
 
 class MBConvN(nn.Module):
-    
+    ''' Residual Bottleneck Block with Expansion Factor = N as defined in Mobilenet-V2 paper
+        with Squeeze and Excitation Block and Stochastic Depth. 
+    '''
+
     def __init__(self, n_in, n_out, kernel_size = 3, 
                  stride = 1, expansion_factor = 6,
                  reduction = 4, # Squeeze and Excitation Block
                  survival_prob = 0.8 # Stochastic Depth
                 ):
-        
+
         super(MBConvN, self).__init__()
         
         self.skip_connection = (stride == 1 and n_in == n_out) 
@@ -123,12 +108,7 @@ class MBConvN(nn.Module):
         return x
     
 
-#----------------------------------------------------------------------------------------------
-
-'''Efficient-net Class'''
-
 class EfficientNet(nn.Module):
-    
     '''Generic Efficient net class which takes width multiplier, Depth multiplier, and Survival Prob.'''
     
     def __init__(self, input_channels, width_mult = 1, depth_mult = 1, 
@@ -185,6 +165,7 @@ class EfficientNet(nn.Module):
         layers.append(ConvBnAct(in_channels, last_channel, kernel_size = 1, stride = 1, padding = 0))
     
         return nn.Sequential(*layers)
+
 # Compound scaling factors for efficient-net family.
 efficient_net_config = {
     # tuple of width multiplier, depth multiplier, resolution, and Survival Prob

@@ -1,23 +1,21 @@
 #Source https://towardsdatascience.com/residual-network-implementing-resnet-a7da63c7b278
-import torch
 import torch.nn as nn
 
 from functools import partial
-from dataclasses import dataclass
 from collections import OrderedDict
 #
 class Conv2dAuto(nn.Conv2d):
+    """Auton Padding for Convolutional layer
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.padding =  (self.kernel_size[0] // 2, self.kernel_size[1] // 2) # dynamic add padding based on the kernel_size
         
 conv3x3 = partial(Conv2dAuto, kernel_size=3, bias=False)
 
-#conv = conv3x3(in_channels=32, out_channels=64)
-#print(conv)
-#del conv
-
 class ResidualBlock(nn.Module):
+    """Class for generation of Residual Block
+    """
     def __init__(self, in_channels, out_channels):
         super().__init__()
         self.in_channels, self.out_channels =  in_channels, out_channels
@@ -35,13 +33,9 @@ class ResidualBlock(nn.Module):
     def should_apply_shortcut(self):
         return self.in_channels != self.out_channels
 
-#dummy = torch.ones((1, 1, 1, 1))
-
-#block = ResidualBlock(1, 64)
-#print(block(dummy))
-
-
 class ResNetResidualBlock(ResidualBlock):
+    """Residual block of Resnet
+    """
     def __init__(self, in_channels, out_channels, expansion=1, downsampling=1, conv=conv3x3, *args, **kwargs):
         super().__init__(in_channels, out_channels)
         self.expansion, self.downsampling, self.conv = expansion, downsampling, conv
@@ -63,6 +57,8 @@ class ResNetResidualBlock(ResidualBlock):
         return self.in_channels != self.expanded_channels
 
 class ResNetResidualBlock(ResidualBlock):
+    """Resnet Residual Block
+    """
     def __init__(self, in_channels, out_channels, expansion=1, downsampling=1, conv=conv3x3, *args, **kwargs):
         super().__init__(in_channels, out_channels)
         self.expansion, self.downsampling, self.conv = expansion, downsampling, conv
@@ -82,8 +78,6 @@ class ResNetResidualBlock(ResidualBlock):
     @property
     def should_apply_shortcut(self):
         return self.in_channels != self.expanded_channels
-
-#print(ResNetResidualBlock(32, 64))
 
 def conv_bn(in_channels, out_channels, conv, *args, **kwargs):
     return nn.Sequential(OrderedDict({'conv': conv(in_channels, out_channels, *args, **kwargs), 
@@ -92,6 +86,8 @@ def conv_bn(in_channels, out_channels, conv, *args, **kwargs):
 conv_bn(3, 3, nn.Conv2d, kernel_size=3)
 
 class ResNetBasicBlock(ResNetResidualBlock):
+    """Class for basic building block of Resnet
+    """
     expansion = 1
     def __init__(self, in_channels, out_channels, activation=nn.ReLU, *args, **kwargs):
         super().__init__(in_channels, out_channels, *args, **kwargs)
@@ -101,13 +97,9 @@ class ResNetBasicBlock(ResNetResidualBlock):
             conv_bn(self.out_channels, self.expanded_channels, conv=self.conv, bias=False),
         )
 
-#dummy = torch.ones((1, 32, 224, 224))
-
-#block = ResNetBasicBlock(32, 64)
-#block(dummy).shape
-#print(block)
-
 class ResNetBottleNeckBlock(ResNetResidualBlock):
+    """Class for basic building bottleneckblock of Resnet
+    """
     expansion = 4
     def __init__(self, in_channels, out_channels, activation=nn.ReLU, *args, **kwargs):
         super().__init__(in_channels, out_channels, expansion=4, *args, **kwargs)
@@ -120,6 +112,8 @@ class ResNetBottleNeckBlock(ResNetResidualBlock):
         )
 
 class ResNetLayer(nn.Module):
+    """Class for building basic ResNet Layer
+    """
     def __init__(self, in_channels, out_channels, block = ResNetBasicBlock, n=1, *args, **kwargs) -> None:
         super().__init__()
         downsampling = 2 if in_channels != out_channels else 1
@@ -132,33 +126,6 @@ class ResNetLayer(nn.Module):
         x = self.blocks(x)
         return x
 
-#dummy = torch.ones((1, 32, 48, 48))
-
-#layer = ResNetLayer(64, 128, block=ResNetBasicBlock, n=3)
-# layer(dummy).shape
-#print(layer)
-
-class ResNetLayer(nn.Module):
-    def __init__(self, in_channels, out_channels, block=ResNetBasicBlock, n=1, *args, **kwargs):
-        super().__init__()
-        # 'We perform downsampling directly by convolutional layers that have a stride of 2.'
-        downsampling = 2 if in_channels != out_channels else 1
-        
-        self.blocks = nn.Sequential(
-            block(in_channels , out_channels, *args, **kwargs, downsampling=downsampling),
-            *[block(out_channels * block.expansion, 
-                    out_channels, downsampling=1, *args, **kwargs) for _ in range(n - 1)]
-        )
-
-    def forward(self, x):
-        x = self.blocks(x)
-        return x
-
-#dummy = torch.ones((1, 32, 48, 48))
-
-#layer = ResNetLayer(64, 128, block=ResNetBasicBlock, n=3)
-# layer(dummy).shape
-#print(layer)
 
 class ResNetEncoder(nn.Module):
     """
@@ -210,9 +177,9 @@ class ResnetDecoder(nn.Module):
         x = self.decoder(x)
         return x
 
-
 class ResNet(nn.Module):
-    
+    """ResNet Network Class
+    """
     def __init__(self, in_channels, n_classes, *args, **kwargs):
         super().__init__()
         self.encoder = ResNetEncoder(in_channels, *args, **kwargs)
@@ -223,23 +190,62 @@ class ResNet(nn.Module):
         x = self.decoder(x)
         return x
 
-
 def resnet18(in_channels, n_classes):
+    """Create 18 layer Resnet
+
+    Args:
+        in_channels (int): Number of input Channels
+        n_classes (int): Number of output Class
+
+    Returns:
+        ResNet: Created Network
+    """
     return ResNet(in_channels, n_classes, block=ResNetBasicBlock, deepths=[2, 2, 2, 2])
 
 def resnet34(in_channels, n_classes):
+    """Create 34 layer Resnet
+
+    Args:
+        in_channels (int): Number of input Channels
+        n_classes (int): Number of output Class
+
+    Returns:
+        ResNet: Created Network
+    """
     return ResNet(in_channels, n_classes, block=ResNetBasicBlock, deepths=[3, 4, 6, 3])
 
 def resnet50(in_channels, n_classes):
+    """Create 50 layer Resnet
+
+    Args:
+        in_channels (int): Number of input Channels
+        n_classes (int): Number of output Class
+
+    Returns:
+        ResNet: Created Network
+    """
     return ResNet(in_channels, n_classes, block=ResNetBottleNeckBlock, deepths=[3, 4, 6, 3])
 
 def resnet101(in_channels, n_classes):
+    """Create 101 layer Resnet
+
+    Args:
+        in_channels (int): Number of input Channels
+        n_classes (int): Number of output Class
+
+    Returns:
+        ResNet: Created Network
+    """
     return ResNet(in_channels, n_classes, block=ResNetBottleNeckBlock, deepths=[3, 4, 23, 3])
 
 def resnet152(in_channels, n_classes):
+    """Create 152 layer Resnet
+
+    Args:
+        in_channels (int): Number of input Channels
+        n_classes (int): Number of output Class
+
+    Returns:
+        ResNet: Created Network
+    """
     return ResNet(in_channels, n_classes, n_classes, block=ResNetBottleNeckBlock, deepths=[3, 8, 36, 3])
-
-#from torchsummary import summary
-
-#model = resnet101(3, 1000)
-#summary(model.cuda(), (3, 224, 224))

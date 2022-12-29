@@ -6,26 +6,21 @@ import pandas as pd
 import sys
 from Resnet import resnet18, resnet101
 from Efficient_net import EfficientNet, efficient_net_config
-#from tqdm import tqdm
 sys.path.append("..\\..\\src")
 
 from datasets import dataset_loader
 from model_class import NeuralNet
 from run_phase import run_phase
 from pandas import DataFrame
-#import matplotlib.pyplot as plt
 import torch.nn as nn
 import torch.nn.functional as F
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 from torch.utils.data import Dataset
-#import albumentations as A
-#from albumentations.pytorch import ToTensorV2
-#from torch.utils.data import Dataset
+
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import StratifiedKFold
 from torchvision.models import efficientnet_v2_l, EfficientNet_V2_L_Weights
-#from common_func_hyperspectral import HyperspectralDataset, get_datapoint, get_all_compositions, Net
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 image_height = 512
@@ -72,6 +67,14 @@ def get_datapoint(ds, device):
     return X_train, y_train
    
 def get_augmentation_composition(specific_augmentation= None):
+    """Get Augmentation Composition
+
+    Args:
+        specific_augmentation (Albumentation, optional): specific augmentation to be applied to compositions. Defaults to None.
+
+    Returns:
+        aug: Composition of augmentation
+    """
     list_of_augmentation = []
     last_augmentation = [A.Resize(image_height, image_width), A.Normalize(), ToTensorV2()]
     if specific_augmentation:
@@ -81,6 +84,11 @@ def get_augmentation_composition(specific_augmentation= None):
     return aug
 
 def get_all_compositions():
+    """Get list of compositions
+
+    Returns:
+        list_of_compositions: list of compositions
+    """
     list_of_compositions = []
     for elem in contrast_brightness_values:
         list_of_compositions.append(get_augmentation_composition(A.augmentations.transforms.RandomContrast(limit=[elem, elem], always_apply= True, p=1)))
@@ -146,6 +154,16 @@ class TFNet(nn.Module):
         return x
 
 def get_efficient_net(version = 'b3', input_channels = 54, number_of_classes = 10):
+    """Construct an efficient net from scratch
+
+    Args:
+        version (str, optional): The version of Efficient Net that one needs. Defaults to 'b3'.
+        input_channels (int, optional): Number of input channels of the EfficientNet. Defaults to 54.
+        number_of_classes (int, optional): Number of classes for the efficientnet. Defaults to 10.
+
+    Returns:
+        net: Efficient Net
+    """
     width_mult, depth_mult, res, dropout_rate = efficient_net_config[version]
     net = EfficientNet(input_channels, width_mult, depth_mult, dropout_rate, num_classes = number_of_classes)
     return net
